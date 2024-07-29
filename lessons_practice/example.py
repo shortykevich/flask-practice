@@ -1,10 +1,9 @@
-from datetime import datetime
+from flask import Flask
 
-def app(environ, start_response):
-    time = datetime.now()
-    data = data = bytes(f'The time is {time:%b %d %H:%M:%S}', 'utf-8')
-    start_response("200 OK", [
-        ("Content-Type", "text/plain"),
-        ("Content-Length", str(len(data)))
-    ])
-    return [data]
+# Это callable WSGI-приложение
+app = Flask(__name__)
+
+
+@app.route('/')
+def hello_world():
+    return 'Hello, Hexlet!'
