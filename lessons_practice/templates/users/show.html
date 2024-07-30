@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Example application</title>
+  </head>
+  <body>
+    <a href="/users">Пользователи</a>
+      <table>
+        <thead>
+          <th>ID</th>
+          <th>First name</th>
+          <th>Last name</th>
+          <th>email</th>
+        </thead>
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.first_name }}</td>
+          <td>{{ user.last_name }}</td>
+          <td>{{ user.email }}</td>
+        </tr>
+      </table>
+  </body>
+</html>
