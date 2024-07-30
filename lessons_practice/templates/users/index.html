@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example application</title>
+</head>
+<body>
+  <form action="/users" method="get">
+    <input type="search" name="term" value="{{ term }}" />
+    <input type="submit" value="Search" />
+  </form>
+  <table>
+    <thead>
+      <th>ID</th>
+      <th>First name</th>
+      <th>Last name</th>
+      <th>EMAIL</th>
+    </thead>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
