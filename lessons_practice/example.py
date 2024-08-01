@@ -1,43 +1,59 @@
-from flask import Flask, render_template, request
-from lessons_practice.repository import PostsRepository
+from flask import (
+    Flask,
+    flash,
+    get_flashed_messages,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from hashlib import sha256
 
 app = Flask(__name__)
+app.secret_key = ' '
 
-repo = PostsRepository(50)
+
+users = [
+    {'name': 'tota', 'password': sha256(b'password123').hexdigest()},
+    {'name': 'alice', 'password': sha256(b'donthackme').hexdigest()},
+    {'name': 'bob', 'password': sha256(b'qwerty').hexdigest()},
+]
+
+
+def get_user(form_data, repo):
+    name = form_data['name']
+    password = sha256(form_data['password'].encode()).hexdigest()
+    for user in repo:
+        if user['name'] == name and user['password'] == password:
+            return user
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    messages = get_flashed_messages(with_categories=True)
+    current_user = session.get('user')
+    return render_template(
+        'index.html',
+        messages=messages,
+        current_user=current_user,
+        )
 
 
 # BEGIN (write your solution here)
-@app.route('/posts/<slug>')
-def show_post(slug):
-    post = repo.find(slug)
-
-    if not post:
-        return 'Page not found', 404
-
-    return render_template(
-        'posts/show.html',
-        post=post
-    )
+@app.post('/session/new')
+def new_session():
+    data = request.form.to_dict()
+    user = get_user(data, users)
+    if not user:
+        flash('Wrong password or name', 'warning')
+        return redirect(url_for('index'))
+    session['user'] = user
+    return redirect(url_for('index'))
 
 
-@app.route('/posts')
-def show_posts():
-    posts = repo.content()
-    page = request.args.get('page', default=1, type=int)
-    per_page = 5
-
-    target_page = ((page - 1) * per_page)
-    next_page = page if page == len(posts) // per_page else page + 1
-    prev_page = page if page == 1 else page - 1
-    return render_template(
-        'posts/index.html',
-        posts=posts[target_page:target_page + per_page],
-        next_page=next_page,
-        prev_page=prev_page
-    )
+@app.route('/session/delete', methods=['POST', 'DELETE'])
+def delete_session():
+    session.clear()
+    return redirect(url_for('index'))
 # END
